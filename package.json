@@ -1,0 +1,44 @@
+{
+  "name": "postmsg-audit",
+  "version": "1.0.0",
+  "description": "Automated detector for cross-window message (postMessage) vulnerabilities",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/cli.ts",
+    "test": "npm run test:unit",
+    "test:unit": "node --test --import tsx tests/origin-check.test.ts tests/message-schema.test.ts tests/bypass.test.ts",
+    "test:corpus": "node --test --import tsx tests/corpus.test.ts",
+    "smoke": "tsx scripts/smoke-instrument.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shizhihui-21699/ccfb-16415.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/shizhihui-21699/ccfb-16415/issues"
+  },
+  "homepage": "https://github.com/shizhihui-21699/ccfb-16415#readme",
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "acorn": "^8.19.0",
+    "acorn-loose": "^8.5.2",
+    "acorn-walk": "^8.3.5",
+    "source-map": "^0.8.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "playwright": "^1.65.1"
+  },
+  "bin": {
+    "postmsg-audit": "dist/cli.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

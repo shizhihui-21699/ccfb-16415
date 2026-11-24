@@ -1,0 +1,20 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Hardened</title></head>
+<body><div id="out"></div>
+<script>
+// Correct implementation used as a negative control: must NOT be reported.
+var ALLOWED = new Set(['https://trusted.example.com', 'https://partner.example.org']);
+window.addEventListener('message', function (e) {
+  if (!ALLOWED.has(e.origin)) return;
+  var d = e.data;
+  if (!d || typeof d.html !== 'string') return;
+  // still dangerous sink, but correctly gated by an exact origin allow-list
+  document.getElementById('out').textContent = d.html;
+});
+// correct: same-origin only
+window.addEventListener('message', function (e) {
+  if (e.origin !== location.origin) return;
+  document.title = String(e.data && e.data.t || '');
+});
+</script>
+</body></html>

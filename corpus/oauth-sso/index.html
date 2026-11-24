@@ -1,0 +1,25 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>SSO Bridge</title></head>
+<body><div id="status">waiting</div>
+<script>
+// OAuth popup bridge: the login popup posts the auth code back.
+window.addEventListener('message', function (ev) {
+  var d = ev.data;
+  if (!d || d.type !== 'oauth:callback') return;
+  // BUG: trusts a data flag instead of the origin
+  if (!d.verified) return;
+  document.getElementById('status').textContent = 'logged in';
+  // code is used to build a redirect — open redirect + token leak
+  window.location.replace(d.redirect + '?code=' + d.code);
+});
+
+// BUG: deny-list only; everything else is allowed, and it writes a token
+addEventListener('message', function (e) {
+  if (e.origin === 'https://known-bad.example') return;
+  if (e.data && e.data.ssoToken) {
+    localStorage.setItem('sso', e.data.ssoToken);
+    document.getElementById('status').innerHTML = 'token stored';
+  }
+});
+</script>
+</body></html>

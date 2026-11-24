@@ -1,0 +1,36 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Checkout</title></head>
+<body>
+<div id="summary">checkout</div>
+<div id="notice"></div>
+<script>
+// Payment widget embedded by merchants; the opener is a merchant page on an
+// arbitrary domain, so the widget is expected to *validate* the sender.
+(function () {
+  var WIDGET_ORIGIN = 'https://widget.pay-corp.test';
+
+  window.addEventListener('message', function (e) {
+    // BUG 1: prefix check. https://widget.pay-corp.test.attacker.tld passes.
+    if (e.origin.indexOf(WIDGET_ORIGIN) !== 0) return;
+    var m = e.data;
+    if (m && m.type === 'pay:update') {
+      // BUG 2: amount flows into DOM via innerHTML
+      document.getElementById('summary').innerHTML = 'Amount: ' + m.amount;
+    }
+  });
+
+  // BUG 3: a second listener with no origin check at all, for "compat".
+  window.onmessage = function (ev) {
+    if (!ev.data || ev.data.cmd !== 'pay:complete') return;
+    document.getElementById('notice').innerHTML = '<b>Paid!</b> ' + (ev.data.receipt || '');
+  };
+
+  // BUG 4: token check in data, not origin (forgeable)
+  addEventListener('message', function (e) {
+    if (e.data && e.data.token === 'widget-internal') {
+      document.title = 'SESSION:' + (e.data.user || 'anon');
+    }
+  });
+})();
+</script>
+</body></html>
